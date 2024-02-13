@@ -1,8 +1,44 @@
-import { Graphics, Text } from "@inlet/react-pixi";
+import React from 'react';
+import { Text } from "@inlet/react-pixi";
 import { TextStyle } from "@pixi/text";
-import { yellow, blue, green, white, red, black } from "../../utils/colors";
+import { white, black } from "../../utils/colors";
 import InputBox from "../InputBox";
 
+// Handler functions
+function handleCurricularName(key) {
+  const existingValue = localStorage.getItem(key);
+  const newValue = prompt("Please name your curricular content:", existingValue);
+  if (newValue !== null) {
+    localStorage.setItem(key, newValue);
+  }
+}
+
+function handleCurricularKeywords(key) {
+  const existingValue = localStorage.getItem(key);
+  const newValue = prompt("Keywords make your research easier:", existingValue);
+  if (newValue !== null) {
+    localStorage.setItem(key, newValue);
+  }
+}
+
+function handleCurricularAuthorID(key) {
+  const existingValue = localStorage.getItem(key);
+  const newValue = prompt("Please create an AuthorId:", existingValue);
+  if (newValue !== null) {
+    localStorage.setItem(key, newValue);
+  }
+}
+
+function handlePinInput(key) {
+  let pin = prompt("Enter a code PIN", localStorage.getItem(key));
+  if (pin && !isNaN(pin)) {
+    localStorage.setItem(key, pin);
+  } else if (pin !== null) {
+    alert("PIN must be numeric.");
+  }
+}
+
+// Function to create input boxes for curricular content
 function createInputBox(charLimit, scaleFactor, widthMultiplier, xMultiplier, yMultiplier, textKey, totalWidth, totalHeight, callback) {
   const text = localStorage.getItem(textKey)?.slice(0, charLimit) +
                (localStorage.getItem(textKey)?.length > charLimit ? '...' : '');
@@ -14,6 +50,7 @@ function createInputBox(charLimit, scaleFactor, widthMultiplier, xMultiplier, yM
 
   return (
     <InputBox
+      key={textKey}
       height={height}
       width={width}
       x={x}
@@ -29,87 +66,10 @@ function createInputBox(charLimit, scaleFactor, widthMultiplier, xMultiplier, yM
   );
 }
 
-export const NameBox = (props) => {
-  const { height, width } = props;
-
-  function handleBoxInput(key) {
-    const existingValue = localStorage.getItem(key);
-    const newValue = prompt(`Please Enter Your Value for ${key}`, existingValue);
-
-    if (newValue !== null) {
-      localStorage.setItem(key, newValue);
-    }
-  }
-
-  // Makes sure that on startup, the checkmark boxes start empty
-  function intializeCheckmarkBoxes() {
-    startup = true
-    if (startup === true) {
-      startup = false
-      localStorage.setItem("OptionA Checkmark", " ")
-      localStorage.setItem("OptionB Checkmark", " ")
-      localStorage.setItem("OptionC Checkmark", " ")
-      localStorage.setItem("OptionD Checkmark", " ")
-    }
-  }
-  
-    return (
-      <>
-        {/* charLimit, scaleFactor, widthMultiplier, xMultiplier, yMultiplier, textKey, totalWidth, totalHeight, callback*/}
-        {createInputBox(220, 0.19, 1.595, 0.134, 0.57, 'Multiple Choice 1', width, height, handleBoxInput)}
-        {createInputBox(220, 0.19, 1.595, 0.134, 0.66, 'Multiple Choice 2', width, height, handleBoxInput)}
-        {createInputBox(220, 0.19, 1.595, 0.134, 0.75, 'Multiple Choice 3', width, height, handleBoxInput)}
-        {createInputBox(220, 0.19, 1.595, 0.134, 0.84, 'Multiple Choice 4', width, height, handleBoxInput)}
-        {createInputBox(60, 0.10, 0.54, 0.143+ 0.062, 0.136-.050, 'Conjecture Name', width, height, handleBoxInput)}
-        {createInputBox(220, 0.10, .3, 0.46+ 0.062, 0.136-.050, 'Author Name', width, height, handleBoxInput)}
-        {createInputBox(220, 0.30, 1.595, 0.134, 0.175-.050, 'Conjecture Description', width, height, handleBoxInput)}
-        {createInputBox(220, 0.10, 1.268, 0.203 + 0.062, 0.295-.050, 'Conjecture Keywords', width, height, handleBoxInput)}
-
-        {/* text, xMultiplier, yMultiplier, fontSizeMultiplier, totalWidth, totalHeight */}
-        {createTextElement("KEYWORDS:", 0.137+ 0.062, 0.315-0.05, 0.018, width, height)}
-        {createTextElement("PIN:", 0.605+ 0.062, 0.155-0.05, 0.018, width, height)}
-        {createTextElement("AUTHOR:", 0.41+ 0.062, 0.155-0.05, 0.018, width, height)}
-        {createTextElement("CURRENT M-CLIP:", 0.45, 0.305, 0.018, width, height)}
-        {createTextElement("MULTIPLE CHOICE", 0.45, 0.55, 0.018, width, height)}
-        {createTextElement("Curricular Content Editor", 0.45, 0.05, 0.025, width, height)}
-        {createTextElement("NAME:", 0.108+ 0.062, 0.155-0.05, 0.018, width, height)}
-
-        {intializeCheckmarkBoxes()}
-        {/* If the user clicks multiple choice button A, then only A is marked and the rest are empty */}
-        {props.boxState === "optiona" && (
-          localStorage.setItem("OptionA Checkmark", " X"),
-          localStorage.setItem("OptionB Checkmark", " "),
-          localStorage.setItem("OptionC Checkmark", " "),
-          localStorage.setItem("OptionD Checkmark", " ")
-        )}
-        {/* If the user clicks multiple choice button B, then only B is marked and the rest are empty */}
-        {props.boxState === "optionb" && (
-          localStorage.setItem("OptionA Checkmark", " "),
-          localStorage.setItem("OptionB Checkmark", " X"),
-          localStorage.setItem("OptionC Checkmark", " "),
-          localStorage.setItem("OptionD Checkmark", " ")
-        )}
-        {/* If the user clicks multiple choice button C, then only C is marked and the rest are empty */}
-        {props.boxState === "optionc" && (
-          localStorage.setItem("OptionA Checkmark", " "),
-          localStorage.setItem("OptionB Checkmark", " "),
-          localStorage.setItem("OptionC Checkmark", " X"),
-          localStorage.setItem("OptionD Checkmark", " ")
-        )}
-        {/* If the user clicks multiple choice button D, then only D is marked and the rest are empty */}
-        {props.boxState === "optiond" && (
-          localStorage.setItem("OptionA Checkmark", " "),
-          localStorage.setItem("OptionB Checkmark", " "),
-          localStorage.setItem("OptionC Checkmark", " "),
-          localStorage.setItem("OptionD Checkmark", " X")
-        )}
-      </>
-    );
-  }
-
 function createTextElement(text, xMultiplier, yMultiplier, fontSizeMultiplier, totalWidth, totalHeight) {
   return (
     <Text
+      key={text}
       text={text}
       x={totalWidth * xMultiplier}
       y={totalHeight * yMultiplier}
@@ -118,64 +78,32 @@ function createTextElement(text, xMultiplier, yMultiplier, fontSizeMultiplier, t
           align: "left",
           fontFamily: "Arial",
           fontSize: totalWidth * fontSizeMultiplier,
-          fontWeight: 800,
-          fill: [blue],
-          letterSpacing: 0,
+          fontWeight: "bold",
+          fill: [black],
         })
       }
-      anchor={0.5}
     />
   );
 }
 
-export const YourComponent = (props) => {
-  return (
-    <>
-      {createTextElement("KEYWORDS:", 0.1275, 0.322, 0.018, width, height)}
-      {createTextElement("PIN:", 0.797, 0.13, 0.018, width, height)}
-      {createTextElement("AUTHOR:", 0.6, 0.13, 0.018, width, height)}
-      {createTextElement("CURRENT M-CLIP:", 0.50, 0.37, 0.018, width, height)}
-      {createTextElement("MULTIPLE CHOICE", 0.50, 0.52, 0.018, width, height)}
-      {createTextElement("Conjecture Editor", 0.5, 0.05, 0.025, width, height)}
-      {createTextElement("NAME:", 0.102, 0.13, 0.018, width, height)}
-      {/* ... other Text elements ... */}
-    </>
-  );
-}
 
-
-export const PINBox = (props) => {
+export const CurricularContentEditor = (props) => {
   const { height, width } = props;
 
-  // Creates a popup in which the user can set a pin for their conjecture
-  function pinBoxInput() {
-    const existingPin = localStorage.getItem('PIN');
-    let pin = prompt("Please Enter Your PIN", existingPin);
-
-    if (!isNaN(pin) && pin !== null) {
-      localStorage.setItem('PIN', pin);
-    } else if (pin !== null) {
-      alert('PIN must be numeric');
-    }
-  }
-
   return (
-      <>
-      {/* PINBox InputBox */}
-      <InputBox
-        height={height * 0.10}
-        width={width * 0.2}
-        x={width * 0.6910}
-        y={height * 0.085}
-        color={white}
-        fontSize={width * 0.015}
-        fontColor={black}
-        text={
-          localStorage.getItem('PIN') || ' ' // Show existing PIN if available
-        }
-        fontWeight={300}
-        callback={pinBoxInput} // Create Popup
-      />
-      </>
-  )
-}
+    <>
+      {createInputBox(60, 0.10, 0.55, 0.123+ 0.13, 0.136-.030, 'CurricularName', width, height, handleCurricularName)}
+      {createInputBox(220, 0.10, 1.268, 0.203 + 0.100, 0.295-.030, 'CurricularKeywords', width, height, handleCurricularKeywords)}
+      {createInputBox(220, 0.10, .3, 0.46+ 0.105, 0.136-.030, 'CurricularAuthorID', width, height, handleCurricularAuthorID)}
+      {createInputBox(4, 0.10, .2, 0.730, 0.105, 'CurricularPIN', width, height, handlePinInput)}
+
+      {createTextElement("Curricular Content Editor", 0.35, 0.030, 0.025, width, height)}
+      {createTextElement("Keywords:", 0.195, 0.265, 0.018, width, height)}
+      {createTextElement("Pin:", 0.690, 0.105, 0.018, width, height)}
+      {createTextElement("AuthorId:", 0.480, 0.105, 0.018, width, height)}
+      {createTextElement("CurricularName:",0.110, 0.100, 0.018, width, height)}
+    </>
+  );
+};
+
+
