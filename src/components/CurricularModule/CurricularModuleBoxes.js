@@ -38,6 +38,8 @@ function handlePinInput(key) {
   }
 }
 
+
+
 // Function to create input boxes for curricular content
 function createInputBox(charLimit, scaleFactor, widthMultiplier, xMultiplier, yMultiplier, textKey, totalWidth, totalHeight, callback) {
   const text = localStorage.getItem(textKey)?.slice(0, charLimit) +

@@ -3,16 +3,33 @@ import Background from "../Background";
 import { blue, white, red, green } from "../../utils/colors";
 import Button from "../Button";
 import RectButton from "../RectButton";
-import { writeToDatabaseConjecture, writeToDatabaseDraft, getConjectureDataByUUID,getConjectureDataByAuthorID, getConjectureDataByPIN, getPoseDataByConjUUID } from "../../firebase/database";
+import { writeToDatabaseConjecture, writeToDatabaseDraft } from "../../firebase/database";
 import { CurricularContentEditor } from "../CurricularModule/CurricularModuleBoxes";
 import { useMachine } from "@xstate/react";
 import { CurricularContentEditorMachine } from "../../machines/curricularEditorMachine";
 
-
-
 const CurricularModule = (props) => {
   const { height, width, conjectureCallback, mainCallback } = props;
   const [state, send] = useMachine(CurricularContentEditorMachine);
+
+  // Reset Function
+  const resetCurricularValues = () => {
+    localStorage.removeItem('CurricularName');
+    localStorage.removeItem('CurricularAuthorID');
+    localStorage.removeItem('CurricularKeywords');
+    localStorage.removeItem('CurricularPIN');
+  };
+
+  const enhancedMainCallback = () => {
+    resetCurricularValues(); // Reset values before going back
+    mainCallback(); //use the callbackfunction
+  };
+
+  // Publish function that includes reset
+  const publishAndReset = () => {
+    writeToDatabaseConjecture(); // publish to database
+    resetCurricularValues(); // Reset values after publishing
+  };
 
   return (
     <>
@@ -27,7 +44,7 @@ const CurricularModule = (props) => {
         fontColor={white}
         text={"BACK"}
         fontWeight={800}
-        callback={mainCallback} // Exit Back To Home
+        callback={enhancedMainCallback} //this will reset everything once you leave the page
       />
 
       <Button
@@ -45,8 +62,8 @@ const CurricularModule = (props) => {
       <Button
         height={height * 0.2}
         width={width * 0.1}
-        x={width *0.90}
-        y={height *0.52}
+        x={width * 0.90}
+        y={height * 0.52}
         color={blue}
         fontSize={24}
         fontColor={white}
@@ -65,7 +82,7 @@ const CurricularModule = (props) => {
         fontColor={white}
         text={"SAVE DRAFT"}
         fontWeight={800}
-        callback={ () => writeToDatabaseDraft() } // Implement Save feature
+        callback={() => writeToDatabaseDraft()} // Implement Save feature
       />
 
       <RectButton
@@ -78,7 +95,7 @@ const CurricularModule = (props) => {
         fontColor={white}
         text={"PUBLISH"}
         fontWeight={800}
-        callback={() => writeToDatabaseConjecture()} // publish to database
+        callback={publishAndReset} // Enhanced to include reset
       />
       <CurricularContentEditor height={height} width={width} />
     </>
